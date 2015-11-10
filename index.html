@@ -44,14 +44,19 @@
 
     uniform mat4 vpMat, modelMat;
     uniform vec3 cameraPos;
+    //uniform float time;
 
     varying vec3 cameraNormal;
     varying vec3 worldNormal;
+    varying vec3 localNormal;
 
     void main () {
+      //float time = 1.5;
+
       vec3 worldPos = vec3(modelMat * vec4(vert, 1.0));
            
-      worldNormal = vec3 (modelMat * vec4(norm, 0.0));        
+      worldNormal = vec3 (modelMat * vec4(norm, 0.0));
+      localNormal = norm;      
       cameraNormal = cameraPos - worldPos;
       
       gl_Position = vpMat * vec4(worldPos, 1.0);
@@ -63,6 +68,7 @@
 
     varying vec3 cameraNormal;
     varying vec3 worldNormal;
+    varying vec3 localNormal;
     
     uniform samplerCube samp;
     uniform vec3 lightDir;
@@ -71,9 +77,10 @@
 
       vec3 specColor = vec3(1.0, 0.9, 0.7); // (0.9, 0.8, 0.55)
       vec3 nSurface = normalize(worldNormal);
+      vec3 nModel = normalize(localNormal);
       vec3 nCamera = normalize(cameraNormal);
 
-      vec3 diffuseColor = textureCube(samp, nSurface).xyz;
+      vec3 diffuseColor = textureCube(samp, nModel).xyz;
 
       specColor *= clamp((diffuseColor.b - diffuseColor.r), 0., 0.1) * 3. *
     		pow(
@@ -104,7 +111,7 @@
     varying vec3 worldNormal;
 
     void main () {
-      vec3 worldPos = vec3(modelMat * vec4(vert * 1.12, 1.0));
+      vec3 worldPos = vec3(modelMat * vec4(vert * 1.4, 1.0));
            
       worldNormal = vec3 (modelMat * vec4(norm, 0.0));        
       cameraNormal = cameraPos - worldPos;
@@ -126,23 +133,27 @@
       vec3 nSurface = normalize(worldNormal);
       vec3 nCamera = normalize(cameraNormal);
 
-      //vec3 diffuseColor = vec3(0.2, 0.5, 1.0); // atmosphere color
-
 		  float normDotCam = dot(nSurface, nCamera);
+
       float diffuseAlpha =
-      	(
-      		(1.0 - (normDotCam + 0.456)) - 
-          pow((1.0 - normDotCam + 0.177), 8.0)
-      	) * 8.0;
+        (
+          (1.0 - ((normDotCam + 1999.0) * 0.0005)) - //0.456
+          pow((1.0 - normDotCam), 8.0) //0.177
+        ) * 1200.0;
+
+      diffuseAlpha *= pow(max(1.1 - abs(normDotCam - 0.69),0.4), 4.0);
 
       diffuseAlpha *=
         max(
           dot(
             reflect(-lightDir, nSurface),
-          nCamera) + 0.6,
-        0.);
+          nCamera) + 0.5,
+        0.) +
+        max(
+          0.4 - dot(-lightDir, nSurface),
+        0.) * 0.3; 
 
-      gl_FragColor = vec4(0.2, 0.5, 1.0, diffuseAlpha);      
+      gl_FragColor = vec4(0.2, 0.5, 1.0, diffuseAlpha);
     }
   </script>
 

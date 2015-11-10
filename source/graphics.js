@@ -39,12 +39,14 @@ var graphics = {
         camera.vec_eye[1], camera.vec_eye[2]);
     gl.uniformMatrix4fv(this.shdr_unif_matVP, gl.FALSE, flatten(camera.mat_vp));   
     this.drawObjCubeMapped(ball, this.shdr_unif_matM);
+    //this.drawObjCubeMapped(sphere, this.shdr_unif_matM);
 
     gl.useProgram(this.shdrAtm_prog);
     gl.uniform3f(this.shdrAtm_unif_cPos, camera.vec_eye[0],
         camera.vec_eye[1], camera.vec_eye[2]);
     gl.uniformMatrix4fv(this.shdrAtm_unif_matVP, gl.FALSE, flatten(camera.mat_vp));   
     this.drawObjCubeMapped(ball, this.shdrAtm_unif_matM);
+    //this.drawObjCubeMapped(sphere, this.shdrAtm_unif_matM);
   },
 
   drawSky: function() {
@@ -258,6 +260,7 @@ var graphics = {
 
     // Set up vertex buffers and the sky
     this.initObj(ball);
+    //this.initObj(sphere);
     this.initSky(skies[this.whichSky]);    
 
     // At most 2 attributes per vertex will be used in any shader.

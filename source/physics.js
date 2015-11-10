@@ -11,6 +11,8 @@ var physics = {
     this.newTime = performance.now();
     var dt = this.newTime - this.oldTime;
 
+    ball.mat_model[0] = mult(ball.mat_model[0], rotateY(0.01 * dt));
+
     controls.handleKeys(dt);
     camera.tickShmooze(dt);
 
@@ -65,7 +67,7 @@ var physics = {
     // resize spheres
     var i;
     for (i = 0; i < ball.vertices.length; ++i) {
-      ball.vertices[i] *= 20;
+      ball.vertices[i] *= 3.2;
     }
   }
 };
