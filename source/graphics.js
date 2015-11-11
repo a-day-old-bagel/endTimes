@@ -9,6 +9,8 @@ var graphics = {
   shdr_unif_cPos: undefined,
   shdr_unif_lPos: undefined,
   shdr_unif_lDir: undefined,
+  shdr_unif_cCol: undefined,
+  shdr_unif_time: undefined,
 
   shdrSky_prog: undefined,
   shdrSky_unif_invMat: undefined,
@@ -35,18 +37,17 @@ var graphics = {
     this.drawSky(this.sky);
 
     gl.useProgram(this.shdr_prog);
+    gl.uniform1f(this.shdr_unif_time, physics.totalTime * 0.1);
     gl.uniform3f(this.shdr_unif_cPos, camera.vec_eye[0],
         camera.vec_eye[1], camera.vec_eye[2]);
     gl.uniformMatrix4fv(this.shdr_unif_matVP, gl.FALSE, flatten(camera.mat_vp));   
     this.drawObjCubeMapped(ball, this.shdr_unif_matM);
-    //this.drawObjCubeMapped(sphere, this.shdr_unif_matM);
 
     gl.useProgram(this.shdrAtm_prog);
     gl.uniform3f(this.shdrAtm_unif_cPos, camera.vec_eye[0],
         camera.vec_eye[1], camera.vec_eye[2]);
     gl.uniformMatrix4fv(this.shdrAtm_unif_matVP, gl.FALSE, flatten(camera.mat_vp));   
     this.drawObjCubeMapped(ball, this.shdrAtm_unif_matM);
-    //this.drawObjCubeMapped(sphere, this.shdrAtm_unif_matM);
   },
 
   drawSky: function() {
@@ -55,10 +56,6 @@ var graphics = {
 
     var mat = camera.getVP_inverse();
     gl.uniformMatrix4fv(this.shdrSky_unif_invMat, false, flatten(mat));
-
-    //gl.activeTexture(gl.TEXTURE1);
-    //gl.bindTexture(gl.TEXTURE_CUBE_MAP, this.skyTex);
-    //gl.uniform1i(this.shdrSky_unif_sampler, 1);
 
     gl.drawArrays(gl.TRIANGLES, 0, this.skyVertCount);
   },
@@ -69,10 +66,6 @@ var graphics = {
 
     gl.bindBuffer(gl.ARRAY_BUFFER, obj.normalBuffer);
     gl.vertexAttribPointer(1, 3, gl.FLOAT, false, 0, 0);
-
-    // gl.activeTexture(gl.TEXTURE0);
-    // gl.bindTexture(gl.TEXTURE_2D, obj.texture);
-    //gl.uniform1i(this.shdr_unif_samp, 0);
 
     for (i = 0; i < obj.mat_model.length; ++i) {
       if (obj.isActive[i]) {
@@ -88,7 +81,6 @@ var graphics = {
     gl.bindBuffer(gl.ARRAY_BUFFER, this.skyVertexBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1,   3, -1,   -1, 3]),
       gl.STATIC_DRAW);
-    // gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
     this.skyVertCount = 3;
 
     var sky_load_counter = 0;
@@ -132,13 +124,11 @@ var graphics = {
     gl.bindBuffer(gl.ARRAY_BUFFER, obj.vertexBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(obj.vertices),
       gl.STATIC_DRAW);
-    // gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 0, 0);
 
     obj.normalBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, obj.normalBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(obj.normals),
       gl.STATIC_DRAW);
-    // gl.vertexAttribPointer(1, 3, gl.FLOAT, false, 0, 0);
 
     obj.triCount = obj.vertices.length / 3;
 
@@ -167,7 +157,6 @@ var graphics = {
   },
 
   loadCubeMap: function(base, extension, targetTex, targetTexChannel, callback){
-
     gl.activeTexture(targetTexChannel);
     targetTex = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_CUBE_MAP, targetTex);
@@ -189,24 +178,6 @@ var graphics = {
       image.onload = callback(targetTex, face, image);
       image.src = base + '/' + faces[i][0];
     }
-  },
-
-  cycleSky: function() {
-    // ++this.whichSky;
-    // if (this.whichSky >= skies.length) {
-    //   this.whichSky = 0;
-    // }
-    // this.initSky(skies[this.whichSky]);
-  },
-
-  cycleObjColor: function(obj) {
-    // if (++obj.colorCounter >= obj.colors.length) {
-    //   obj.colorCounter = 0;
-    // }  
-  },
-
-  toggleLimbs: function(obj) {
-    // this.renderLimbs = !this.renderLimbs;
   },
 
   init: function(canvas) {
@@ -231,26 +202,29 @@ var graphics = {
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
     gl.enable(gl.BLEND);
 
-    // Load Shaders
-    this.shdr_prog = initShaders(gl, 'cubeMapped.vert', 'cubeMapped.frag');
+    // Earth shader
+    this.shdr_prog = initShaders(gl, 'earth.vert', 'earth.frag');
     this.shdr_unif_matVP = gl.getUniformLocation(this.shdr_prog, 'vpMat');
     this.shdr_unif_matM = gl.getUniformLocation(this.shdr_prog, 'modelMat');
     this.shdr_unif_samp = gl.getUniformLocation(this.shdr_prog, 'samp');
     this.shdr_unif_cPos = gl.getUniformLocation(this.shdr_prog, 'cameraPos');
     this.shdr_unif_lDir = gl.getUniformLocation(this.shdr_prog, 'lightDir');
+    this.shdr_unif_cCol = gl.getUniformLocation(this.shdr_prog, 'cloudColor');
+    this.shdr_unif_time = gl.getUniformLocation(this.shdr_prog, 'time');
 
+    // Background shader
     this.shdrSky_prog = initShaders(gl, 'sky.vert', 'sky.frag');
     this.shdrSky_unif_invMat = gl.getUniformLocation(this.shdrSky_prog, 
       'inv_mvp');
     this.shdrSky_unif_sampler = gl.getUniformLocation(this.shdrSky_prog,
       'samp');
 
+    // Atmosphere shader
     this.shdrAtm_prog = initShaders(gl, 'atmosphere.vert', 'atmosphere.frag');
     this.shdrAtm_unif_matVP = gl.getUniformLocation(this.shdrAtm_prog, 'vpMat');
     this.shdrAtm_unif_matM = gl.getUniformLocation(this.shdrAtm_prog, 'modelMat');
     this.shdrAtm_unif_cPos = gl.getUniformLocation(this.shdrAtm_prog, 'cameraPos');
     this.shdrAtm_unif_lDir = gl.getUniformLocation(this.shdrAtm_prog, 'lightDir');
-
 
     // Configure Camera
     camera.setAspectX(canvas.width);
@@ -260,8 +234,11 @@ var graphics = {
 
     // Set up vertex buffers and the sky
     this.initObj(ball);
-    //this.initObj(sphere);
-    this.initSky(skies[this.whichSky]);    
+    this.initSky(skies[this.whichSky]);
+
+    // Set cloud color
+    gl.useProgram(this.shdr_prog);
+    gl.uniform3f(this.shdr_unif_cCol, 1.0, 1.0, 1.0);
 
     // At most 2 attributes per vertex will be used in any shader.
     gl.enableVertexAttribArray(0);

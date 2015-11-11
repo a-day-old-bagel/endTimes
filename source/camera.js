@@ -17,11 +17,11 @@ var camera = {
   ang_phi: -0.5,
   ang_phi_target: -0.4,
   ang_phi_speed: 0.004,
-  ang_phi_max: 1.15, // -0.15
+  ang_phi_max: 1.15,
   ang_phi_min: -1.3,
   zoom_dist: 6.0,
-  zoom_dist_max: 10.0, // 4.5
-  zoom_dist_min: 1.0, //0.2
+  zoom_dist_max: 10.0,
+  zoom_dist_min: 1.0,
   zoom_target: 5.0,
   zoom_speed: 0.004,
   phys_last_dt: 1.0,

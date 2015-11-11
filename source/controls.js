@@ -24,10 +24,17 @@ var controls = {
       case 38: // up
       case 39: // right
       case 40: // down
+        controls.keyIsPressed[e.keyCode - 37] = true;
         return false; // Don't scroll the page!
       case 32: // spacebar
         physics.toggleAnim();
         return false; // Don't scroll the page!;
+      case 219:
+        physics.animSpeed -= 0.0025;
+        break;
+      case 221:
+        physics.animSpeed += 0.0025;
+        break;
       default:
         // To see what the code for a certain key is, uncomment this line,
         // reload the page in the browser and press the key.

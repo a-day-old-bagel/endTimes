@@ -5,13 +5,12 @@ var physics = {
   pausedTime: undefined,
   animHasStarted: false,
   animIsRunning: false,
-  animSpeed: 1.0,
+  animSpeed: 0.0025,
+  totalTime: 0.0,
 
   tick: function() {
     this.newTime = performance.now();
     var dt = this.newTime - this.oldTime;
-
-    ball.mat_model[0] = mult(ball.mat_model[0], rotateY(0.01 * dt));
 
     controls.handleKeys(dt);
     camera.tickShmooze(dt);
@@ -24,11 +23,8 @@ var physics = {
         } while (animLoopTime > this.animMaxTime)        
         this.animTime = this.newTime - animLoopTime;
       }
-      if (this.animSpeed >= 1.0) {
-
-      } else {
-
-      }      
+      this.totalTime += this.animSpeed * dt;
+      ball.mat_model[0] = rotateY(this.totalTime);
     }
 
     this.oldTime = this.newTime;
@@ -64,7 +60,8 @@ var physics = {
 
   init: function() {
 
-    // resize spheres
+    // resize spheres, because it's easier than changing
+    // a ton of camera variables.
     var i;
     for (i = 0; i < ball.vertices.length; ++i) {
       ball.vertices[i] *= 3.2;
