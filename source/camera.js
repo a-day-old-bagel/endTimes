@@ -40,13 +40,11 @@ var camera = {
   calcCamVectors: function() {
     this.vec_focus = this.zoomedFocus;
     // now decide where the eye is...
-    var x = 0.0;
-    var y = 0.0;
     var z = this.zoom_dist;
-    var yP = y * Math.cos(this.ang_phi) - z * Math.sin(this.ang_phi);
-    var zP = y * Math.sin(this.ang_phi) + z * Math.cos(this.ang_phi);
-    var xPP = x * Math.cos(this.ang_theta) + zP * Math.sin(this.ang_theta);
-    var zPP = -x * Math.sin(this.ang_theta) + zP * Math.cos(this.ang_theta);
+    var yP = -z * Math.sin(this.ang_phi);
+    var zP =  z * Math.cos(this.ang_phi);
+    var xPP =  zP * Math.sin(this.ang_theta);
+    var zPP =  zP * Math.cos(this.ang_theta);
     this.vec_eye = vec3(xPP + this.vec_focus[0], yP + this.vec_focus[1], zPP +
       this.vec_focus[2]);
   },
