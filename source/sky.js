@@ -1,5 +1,5 @@
 var skies = [
-  {    
+  {
     cubeMap: './images/Earth',
     extension: 'jpg',
     lightDir: [0, 1.0, 0.]

@@ -42,9 +42,9 @@ var camera = {
     // now decide where the eye is...
     var z = this.zoom_dist;
     var yP = -z * Math.sin(this.ang_phi);
-    var zP =  z * Math.cos(this.ang_phi);
-    var xPP =  zP * Math.sin(this.ang_theta);
-    var zPP =  zP * Math.cos(this.ang_theta);
+    var zP = z * Math.cos(this.ang_phi);
+    var xPP = zP * Math.sin(this.ang_theta);
+    var zPP = zP * Math.cos(this.ang_theta);
     this.vec_eye = vec3(xPP + this.vec_focus[0], yP + this.vec_focus[1], zPP +
       this.vec_focus[2]);
   },
@@ -123,10 +123,10 @@ var camera = {
     var cosY = Math.cos(-this.ang_theta);
     var sinY = Math.sin(-this.ang_theta);
     return mat4(
-       cosY,        0,    -sinY,        0,
+       cosY, 0, -sinY, 0,
       -sinX * sinY, cosX, -sinX * cosY, 0,
-       cosX * sinY, sinX,  cosX * cosY, 0,
-       0,           0,     0,           1
+       cosX * sinY, sinX, cosX * cosY, 0,
+       0, 0, 0, 1
     );
   },
   tickShmooze: function(dt) {

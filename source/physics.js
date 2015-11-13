@@ -20,7 +20,7 @@ var physics = {
       if (animLoopTime > this.animMaxTime) {
         do {
           animLoopTime -= this.animMaxTime;
-        } while (animLoopTime > this.animMaxTime)        
+        } while (animLoopTime > this.animMaxTime);
         this.animTime = this.newTime - animLoopTime;
       }
       this.totalTime += this.animSpeed * dt;

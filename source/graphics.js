@@ -30,7 +30,7 @@ var graphics = {
   skyChannel: 1,
 
   render: function() {
-    gl.clear(gl.DEPTH_BUFFER_BIT);    
+    gl.clear(gl.DEPTH_BUFFER_BIT);
     camera.updateVPMat();
 
     gl.useProgram(this.shdrSky_prog);
@@ -40,13 +40,13 @@ var graphics = {
     gl.uniform1f(this.shdr_unif_time, physics.totalTime * 0.1);
     gl.uniform3f(this.shdr_unif_cPos, camera.vec_eye[0],
         camera.vec_eye[1], camera.vec_eye[2]);
-    gl.uniformMatrix4fv(this.shdr_unif_matVP, gl.FALSE, flatten(camera.mat_vp));   
+    gl.uniformMatrix4fv(this.shdr_unif_matVP, gl.FALSE, flatten(camera.mat_vp));
     this.drawObjCubeMapped(ball, this.shdr_unif_matM);
 
     gl.useProgram(this.shdrAtm_prog);
     gl.uniform3f(this.shdrAtm_unif_cPos, camera.vec_eye[0],
         camera.vec_eye[1], camera.vec_eye[2]);
-    gl.uniformMatrix4fv(this.shdrAtm_unif_matVP, gl.FALSE, flatten(camera.mat_vp));   
+    gl.uniformMatrix4fv(this.shdrAtm_unif_matVP, gl.FALSE, flatten(camera.mat_vp));
     this.drawObjCubeMapped(ball, this.shdrAtm_unif_matM);
   },
 
@@ -79,13 +79,13 @@ var graphics = {
   initSky: function(skyObj) {
     this.skyVertexBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, this.skyVertexBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1,   3, -1,   -1, 3]),
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]),
       gl.STATIC_DRAW);
     this.skyVertCount = 3;
 
     var sky_load_counter = 0;
-    var skyCallback = function (texture, face, image) {
-      return function () {
+    var skyCallback = function(texture, face, image) {
+      return function() {
         gl.activeTexture(gl.TEXTURE1);
         gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
         gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
@@ -110,10 +110,10 @@ var graphics = {
           gl.uniform3f(graphics.shdrAtm_unif_lDir, nLightDir[0],
             nLightDir[1], nLightDir[2]);
 
-          console.log("Sky loaded.");
+          console.log('Sky loaded.');
         }
       }
-    }
+    };
     this.sky = skyObj;
     this.loadCubeMap(this.sky.cubeMap, this.sky.extension, this.skyTex,
         gl.TEXTURE1, skyCallback);
@@ -133,8 +133,8 @@ var graphics = {
     obj.triCount = obj.vertices.length / 3;
 
     var load_counter = 0;
-    var callback = function (texture, face, image) {
-      return function () {
+    var callback = function(texture, face, image) {
+      return function() {
         gl.activeTexture(gl.TEXTURE0);
         gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
         gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
@@ -147,16 +147,16 @@ var graphics = {
           gl.activeTexture(gl.TEXTURE0);
           gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
           gl.uniform1i(graphics.shdr_unif_samp, 0);
-          console.log("Object loaded.");
+          console.log('Object loaded.');
         }
       }
-    }
+    };
     obj.sky = skies[obj.whichSky];
     this.loadCubeMap(obj.sky.cubeMap, obj.sky.extension, obj.texture,
         gl.TEXTURE0, callback);
   },
 
-  loadCubeMap: function(base, extension, targetTex, targetTexChannel, callback){
+  loadCubeMap: function(base, extension, targetTex, targetTexChannel, callback) {
     gl.activeTexture(targetTexChannel);
     targetTex = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_CUBE_MAP, targetTex);
@@ -166,12 +166,12 @@ var graphics = {
       gl.LINEAR_MIPMAP_LINEAR);
     gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
 
-    var faces = [["posx." + extension, gl.TEXTURE_CUBE_MAP_POSITIVE_X],
-                 ["negx." + extension, gl.TEXTURE_CUBE_MAP_NEGATIVE_X],
-                 ["posy." + extension, gl.TEXTURE_CUBE_MAP_POSITIVE_Y],
-                 ["negy." + extension, gl.TEXTURE_CUBE_MAP_NEGATIVE_Y],
-                 ["posz." + extension, gl.TEXTURE_CUBE_MAP_POSITIVE_Z],
-                 ["negz." + extension, gl.TEXTURE_CUBE_MAP_NEGATIVE_Z]];
+    var faces = [['posx.' + extension, gl.TEXTURE_CUBE_MAP_POSITIVE_X],
+                 ['negx.' + extension, gl.TEXTURE_CUBE_MAP_NEGATIVE_X],
+                 ['posy.' + extension, gl.TEXTURE_CUBE_MAP_POSITIVE_Y],
+                 ['negy.' + extension, gl.TEXTURE_CUBE_MAP_NEGATIVE_Y],
+                 ['posz.' + extension, gl.TEXTURE_CUBE_MAP_POSITIVE_Z],
+                 ['negz.' + extension, gl.TEXTURE_CUBE_MAP_NEGATIVE_Z]];
     for (var i = 0; i < faces.length; ++i) {
       var face = faces[i][1];
       var image = new Image();
@@ -214,7 +214,7 @@ var graphics = {
 
     // Background shader
     this.shdrSky_prog = initShaders(gl, 'sky.vert', 'sky.frag');
-    this.shdrSky_unif_invMat = gl.getUniformLocation(this.shdrSky_prog, 
+    this.shdrSky_unif_invMat = gl.getUniformLocation(this.shdrSky_prog,
       'inv_mvp');
     this.shdrSky_unif_sampler = gl.getUniformLocation(this.shdrSky_prog,
       'samp');
