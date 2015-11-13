@@ -74,31 +74,29 @@
     uniform float time;
 
     mat2 m2 = mat2( 0.970,  0.242, -0.242,  0.970 );
-    mat2 mm2(in float a) {
+    mat2 noiseFunc(in float a) {
       float c = cos(a), s = sin(a);return mat2(c,-s,s,c);
     }
     float tri(in float x) {
       return abs(fract(x)-.5);
     }
-    vec2 tri2(in vec2 p) {
-      return vec2(tri(p.x+tri(p.y*2.)),tri(p.y+tri(p.x*2.)));
+    vec2 triOther(in vec2 inVec) {
+      return vec2(tri(inVec.x+tri(inVec.y*2.)),tri(inVec.y+tri(inVec.x*2.)));
     }
-    float triangleNoise(in vec2 p)
+    float triangleNoise(in vec2 inVec)
     {
-      float z = 1.5;
-      float z2 = 1.5;
-      float rz = 0.;
-      vec2 bp = p;
+      float zed = 1.5, z2 = 1.5, rz = 0.;
+      vec2 brep = inVec;
       for (float i = 0.; i <= 3.; ++i) {
-        vec2 dg = tri2(bp * 2.) * .8;
-        dg *= mm2(time * .3);
-        p += dg / z2;
-        bp *= 1.6;
+        vec2 deg = triOther(brep * 2.) * .8;
+        deg *= noiseFunc(time * .3);
+        inVec += deg / z2;
+        brep *= 1.6;
         z2 *= .6;
-        z *= 1.8;
-        p *= 1.2;
-        p*= m2;        
-        rz+= (tri(p.x + tri(p.y))) / z;
+        zed *= 1.8;
+        inVec *= 1.2;
+        inVec*= m2;        
+        rz+= (tri(inVec.x + tri(inVec.y))) / zed;
       }
       return rz;
     }
