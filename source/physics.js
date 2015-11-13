@@ -4,7 +4,7 @@ var physics = {
   animMaxTime: undefined,
   pausedTime: undefined,
   animHasStarted: false,
-  animIsRunning: false,
+  animIsRunning: true,
   animSpeed: 0.0025,
   totalTime: 0.0,
 
